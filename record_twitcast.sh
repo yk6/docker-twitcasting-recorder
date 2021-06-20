@@ -6,13 +6,7 @@ if [[ ! -n "$1" ]]; then
   exit 1
 fi
 
-if [[ ! -f "./livedl" ]]; then
-  echo "This script depends on livedl (https://github.com/himananiito/livedl)."
-  echo "Please put the binary file of livedl in the same directory first."
-  exit 1
-fi
-
-INTERVAL="${3:-10}"
+INTERVAL="${3:-20}"
 
 while true; do
   # Monitor live streams of specific user
@@ -34,10 +28,11 @@ while true; do
 
   # Also record low resolution stream simultaneously as backup
   M3U8_URL="http://twitcasting.tv/$1/metastream.m3u8?video=1"
-  ffmpeg -i "$M3U8_URL" -codec copy -f mpegts "$FNAME" > "$FNAME.log" 2>&1 &
+  ffmpeg -i "$M3U8_URL" -codec copy -f mpegts "/download/m3u8_$FNAME" &
 
   # Start recording
-  ./livedl -tcas "$1" > "$FNAME.livedl.log" 2>&1
+  echo ${ARCHIVE}
+  docker run --rm --name "record_livedl" -v "${ARCHIVE}:/livedl" livedl "https://twitcasting.tv/$1"
 
   # Exit if we just need to record current stream
   LOG_PREFIX=$(date +"[%Y-%m-%d %H:%M:%S]")
