@@ -32,7 +32,7 @@ while true; do
 
   # Start recording
   echo ${ARCHIVE}
-  docker run --rm --name "record_livedl" -v "${ARCHIVE}:/livedl" livedl "https://twitcasting.tv/$1"
+  docker run --rm --name "record_livedl" -v "${ARCHIVE}:/livedl" ghcr.io/jim60105/livedl:my-docker-build "https://twitcasting.tv/$1"
 
   # Exit if we just need to record current stream
   LOG_PREFIX=$(date +"[%Y-%m-%d %H:%M:%S]")
