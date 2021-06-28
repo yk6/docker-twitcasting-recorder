@@ -11,13 +11,11 @@ INTERVAL="${3:-20}"
 while true; do
   # Monitor live streams of specific user
   while true; do
-    LOG_PREFIX=$(date +"[%Y-%m-%d %H:%M:%S]")
-    echo "$LOG_PREFIX Try to get current live stream of twitcasting.tv/$1"
+    LOG_PREFIX=$(date +"[%m/%d/%y %H:%M:%S] [twitcasting@$1] ")
     STREAM_API="https://twitcasting.tv/streamserver.php?target=$1&mode=client"
     (curl -s "$STREAM_API" | grep -q '"live":true') && break
 
-    echo "$LOG_PREFIX The stream is not available now."
-    echo "$LOG_PREFIX Retry after $INTERVAL seconds..."
+    echo "$LOG_PREFIX The stream is not available now. Retry after $INTERVAL seconds..."
     sleep $INTERVAL
   done
 
@@ -26,16 +24,15 @@ while true; do
   echo "$LOG_PREFIX Start recording, stream saved to \"$FNAME\"."
   echo "$LOG_PREFIX Use command \"tail -f $FNAME.log\" to track recording progress."
 
-  # Also record low resolution stream simultaneously as backup
-  M3U8_URL="http://twitcasting.tv/$1/metastream.m3u8?video=1"
-  ffmpeg -i "$M3U8_URL" -codec copy -f mpegts "/download/m3u8_$FNAME" &
+  # # Also record low resolution stream simultaneously as backup
+  # M3U8_URL="http://twitcasting.tv/$1/metastream.m3u8?video=1"
+  # ffmpeg -i "$M3U8_URL" -codec copy -f mpegts "/download/m3u8_$FNAME" &
 
   # Start recording
-  echo ${ARCHIVE}
   docker run --rm --name "record_livedl" -v "${ARCHIVE}:/livedl" ghcr.io/jim60105/livedl:my-docker-build "https://twitcasting.tv/$1"
 
   # Exit if we just need to record current stream
-  LOG_PREFIX=$(date +"[%Y-%m-%d %H:%M:%S]")
+  LOG_PREFIX=$(date +"[%m/%d/%y %H:%M:%S] [twitcasting@$1] ")
   echo "$LOG_PREFIX Live stream recording stopped."
   [[ "$2" == "once" ]] && break
 done

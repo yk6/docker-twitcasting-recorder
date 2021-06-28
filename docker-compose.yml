@@ -4,6 +4,7 @@ services:
   record:
     image: ghcr.io/jim60105/docker-twitcasting-recorder
     # build: .
+    restart: always
     env_file:
       - .env
     volumes:
