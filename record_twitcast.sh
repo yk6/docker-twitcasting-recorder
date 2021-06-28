@@ -6,7 +6,7 @@ if [[ ! -n "$1" ]]; then
   exit 1
 fi
 
-INTERVAL="${3:-20}"
+INTERVAL="${3:-10}"
 
 while true; do
   # Monitor live streams of specific user
