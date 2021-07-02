@@ -29,7 +29,7 @@ while true; do
   # ffmpeg -i "$M3U8_URL" -codec copy -f mpegts "/download/m3u8_$FNAME" &
 
   # Start recording
-  docker run --rm --name "record_livedl" -v "${ARCHIVE}:/livedl" ghcr.io/jim60105/livedl:my-docker-build "https://twitcasting.tv/$1"
+  docker run --rm --name "record_livedl" -v "${ARCHIVE}:/livedl" ghcr.io/jim60105/livedl:my-docker-build "https://twitcasting.tv/$1" -tcas tcas-retry=on -tcas-retry-interval=30
 
   # Exit if we just need to record current stream
   LOG_PREFIX=$(date +"[%m/%d/%y %H:%M:%S] [twitcasting@$1] ")
