@@ -1,6 +1,6 @@
 FROM python:alpine
 
-RUN apk --update add --no-cache bash docker curl ffmpeg dumb-init
+RUN apk --update add --no-cache bash docker curl ffmpeg dumb-init gcc libc-dev
 
 WORKDIR /
 COPY record_twitcast.sh .
