@@ -29,7 +29,7 @@ while true; do
 
   # Start recording
   # docker run --rm --name "record_livedl" -v "${ARCHIVE}:/livedl" ghcr.io/jim60105/livedl:my-docker-build "https://twitcasting.tv/$1" -tcas -tcas-retry=on -tcas-retry-interval 30
-  python /main.py -o "/download/ws_$FNAME" $1
+  python /main.py --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36" -o "/download/ws_$FNAME" $1
 
   # Exit if we just need to record current stream
   LOG_PREFIX=$(date +"[%m/%d/%y %H:%M:%S] [twitcasting@$1] ")
