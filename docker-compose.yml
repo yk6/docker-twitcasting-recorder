@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   record:
-    image: ghcr.io/jim60105/docker-twitcasting-recorder
+    image: ghcr.io/jim60105/docker-twitcasting-recorder:try-another-python-project
     # build: .
     restart: always
     env_file:

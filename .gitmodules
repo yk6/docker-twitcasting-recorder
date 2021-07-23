@@ -1,3 +1,3 @@
-[submodule "livedl"]
-	path = livedl
-	url = https://github.com/jim60105/livedl.git
+[submodule "twitcasting-recorder"]
+	path = twitcasting-recorder
+	url = https://github.com/jim60105/twitcasting-recorder.git
