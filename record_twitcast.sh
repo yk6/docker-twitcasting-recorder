@@ -15,13 +15,13 @@ while true; do
     STREAM_API="https://twitcasting.tv/streamserver.php?target=$1&mode=client"
     (curl -s "$STREAM_API" | grep -q '"live":true') && break
 
-    echo "$LOG_PREFIX The stream is not available now. Retry after $INTERVAL seconds..."
+    echo "$LOG_PREFIX [VRB] The stream is not available now. Retry after $INTERVAL seconds..."
     sleep $INTERVAL
   done
 
   # Record using MPEG-2 TS format to avoid broken file caused by interruption
   FNAME="twitcast_${1}_$(date +"%Y%m%d_%H%M%S")"
-  echo "$LOG_PREFIX Start recording..."
+  echo "$LOG_PREFIX [INFO] Start recording..."
 
   # Also record low resolution stream simultaneously as backup
   M3U8_URL="http://twitcasting.tv/$1/metastream.m3u8?video=1"
@@ -31,10 +31,10 @@ while true; do
   # docker run --rm --name "record_livedl" -v "${ARCHIVE}:/livedl" ghcr.io/jim60105/livedl:my-docker-build "https://twitcasting.tv/$1" -tcas -tcas-retry=on -tcas-retry-interval 30
   python /main.py --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36" -o "/download/ws_${FNAME}.ts" $1
   LOG_PREFIX=$(date +"[%m/%d/%y %H:%M:%S] [twitcasting@$1] ")
-  echo "$LOG_PREFIX Stop recording ${FNAME}"
+  echo "$LOG_PREFIX [INFO] Stop recording ${FNAME}"
 
   # Convert to mp4
-  echo "$LOG_PREFIX Start convert ws_${FNAME}.ts to mp4..."
+  echo "$LOG_PREFIX [INFO] Start convert ws_${FNAME}.ts to mp4..."
   ffmpeg -i "/download/ws_${FNAME}.ts" -c copy -movflags +faststart "/download/${FNAME}.mp4" &
 
   # Exit if we just need to record current stream
