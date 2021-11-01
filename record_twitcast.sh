@@ -1,7 +1,7 @@
 #!/bin/bash
 # TwitCasting Live Stream Recorder
 
-if [[ ! -n "$1" ]]; then
+if [[ -z "$1" ]]; then
   echo "usage: $0 twitcasting_id [loop|once] [interval]"
   exit 1
 fi
@@ -24,7 +24,7 @@ while true; do
   echo "$LOG_PREFIX [INFO] Start recording..."
 
   # Discord message with mention row
-  if [[ -z "${DISCORD_WEBHOOK}" ]]; then
+  if [[ -n "${DISCORD_WEBHOOK}" ]]; then
     curl --location --request POST "${DISCORD_WEBHOOK}" \
       --header "Content-Type: application/json" \
       --data-raw "{
