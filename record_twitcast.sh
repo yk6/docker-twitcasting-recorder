@@ -28,7 +28,7 @@ while true; do
     _body="{
   \"username\": \"\",
   \"avatar_url\": \"\",
-  \"content\": \"Twitcasting Start Live! \nhttps://twitcasting.tv/${1}/\",
+  \"content\": \"Twitcasting Live Begins! \nhttps://twitcasting.tv/${1}/\",
   \"embeds\": [],
   \"components\": [
     {
@@ -58,6 +58,31 @@ while true; do
   python /main.py --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36" -o "/download/ws_${FNAME}.ts" $1
   LOG_PREFIX=$(date +"[%m/%d/%y %H:%M:%S] [twitcasting@$1] ")
   echo "$LOG_PREFIX [INFO] Stop recording ${FNAME}"
+
+  # Discord message with mention role
+  if [[ -n "${DISCORD_WEBHOOK}" ]]; then
+    _body="{
+  \"username\": \"\",
+  \"avatar_url\": \"\",
+  \"content\": \"Twitcasting Live is over! \nhttps://twitcasting.tv/${1}/\",
+  \"embeds\": [],
+  \"components\": [
+    {
+      \"type\": 1,
+      \"components\": [
+        {
+          \"type\": 2,
+          \"style\": 5,
+          \"label\": \"Check live history\",
+          \"url\": \"https://twitcasting.tv/${1}/show/\"
+        }
+      ]
+    }
+  ]
+}"
+    curl -s -X POST -H 'Content-type: application/json' \
+        -d "$_body" "$DISCORD_WEBHOOK"
+  fi
 
   # Convert to mp4
   echo "$LOG_PREFIX [INFO] Start convert ws_${FNAME}.ts to mp4..."
