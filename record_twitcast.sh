@@ -23,20 +23,30 @@ while true; do
   FNAME="twitcast_${1}_$(date +"%Y%m%d_%H%M%S")"
   echo "$LOG_PREFIX [INFO] Start recording..."
 
-  # Discord message with mention row
+  # Discord message with mention role
   if [[ -n "${DISCORD_WEBHOOK}" ]]; then
-    curl --location --request POST "${DISCORD_WEBHOOK}" \
-      --header "Content-Type: application/json" \
-      --data-raw "{
-  \"content\": \"${DISCORD_MENTION} Twitcasting Start Live! \nhttps://twitcasting.tv/${1}/\",
+    _body="{
+  \"username\": \"\",
+  \"avatar_url\": \"\",
+  \"content\": \"Twitcasting Start Live! \nhttps://twitcasting.tv/${1}/\",
+  \"embeds\": [],
   \"components\": [
     {
-        \"type\": 2,
-        \"style\": 5,
-        \"label\": \"Twitcasting GOGO\",
-        \"url\": \"https://twitcasting.tv/${1}/\"
-    }]
+      \"type\": 1,
+      \"components\": [
+        {
+          \"type\": 2,
+          \"style\": 5,
+          \"label\": \"Twitcasting GO\",
+          \"url\": \"https://twitcasting.tv/${1}/\"
+        }
+      ]
+    }
+  ]
 }"
+
+    curl -s -X POST -H 'Content-type: application/json' \
+        -d "$_body" "$DISCORD_WEBHOOK"
   fi
 
   # Also record low resolution stream simultaneously as backup
