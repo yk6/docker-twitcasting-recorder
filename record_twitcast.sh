@@ -24,8 +24,8 @@ while true; do
   echo "$LOG_PREFIX [INFO] Start recording..."
 
   # Discord message with mention row
-  if [[ -z "$DISCORD_WEBHOOK" ]]; then
-    curl --location --request POST "$DISCORD_WEBHOOK" \
+  if [[ -z "${DISCORD_WEBHOOK}" ]]; then
+    curl --location --request POST "${DISCORD_WEBHOOK}" \
       --header "Content-Type: application/json" \
       --data-raw "{
   \"content\": \"${DISCORD_MENTION} Twitcasting Start Live! \nhttps://twitcasting.tv/${1}/\",
