@@ -23,6 +23,22 @@ while true; do
   FNAME="twitcast_${1}_$(date +"%Y%m%d_%H%M%S")"
   echo "$LOG_PREFIX [INFO] Start recording..."
 
+  # Discord message with mention row
+  if [[ -z "$DISCORD_WEBHOOK" ]]; then
+    curl --location --request POST "$DISCORD_WEBHOOK" \
+      --header "Content-Type: application/json" \
+      --data-raw "{
+  \"content\": \"${DISCORD_MENTION} Twitcasting Start Live! \nhttps://twitcasting.tv/${1}/\",
+  \"components\": [
+    {
+        \"type\": 2,
+        \"style\": 5,
+        \"label\": \"Twitcasting GOGO\",
+        \"url\": \"https://twitcasting.tv/${1}/\"
+    }]
+}"
+  fi
+
   # Also record low resolution stream simultaneously as backup
   M3U8_URL="http://twitcasting.tv/$1/metastream.m3u8?video=1"
   ffmpeg -i "$M3U8_URL" -codec copy -f mpegts "/download/m3u8_${FNAME}.ts" &
