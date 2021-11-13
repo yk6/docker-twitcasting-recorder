@@ -28,7 +28,7 @@ while true; do
     _body="{
   \"username\": \"\",
   \"avatar_url\": \"\",
-  \"content\": \"Twitcasting Live Begins! \nhttps://twitcasting.tv/${1}/\",
+  \"content\": \"${DISCORD_MENTION} Twitcasting Live Begins! \nhttps://twitcasting.tv/${1}/\",
   \"embeds\": [],
   \"components\": [
     {
