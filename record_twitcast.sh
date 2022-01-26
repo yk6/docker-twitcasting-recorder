@@ -10,12 +10,13 @@ INTERVAL="${3:-10}"
 
 while true; do
   # Monitor live streams of specific user
+  echo "[VRB] Checks stream every $INTERVAL seconds..."
   while true; do
     LOG_PREFIX=$(date +"[%m/%d/%y %H:%M:%S] [twitcasting@$1] ")
     STREAM_API="https://twitcasting.tv/streamserver.php?target=$1&mode=client"
     (curl -s "$STREAM_API" | grep -q '"live":true') && break
 
-    echo "$LOG_PREFIX [VRB] The stream is not available now. Retry after $INTERVAL seconds..."
+    # echo "$LOG_PREFIX [VRB] The stream is not available now. Retry after $INTERVAL seconds..."
     sleep $INTERVAL
   done
 
@@ -23,35 +24,9 @@ while true; do
   FNAME="twitcast_${1}_$(date +"%Y%m%d_%H%M%S")"
   echo "$LOG_PREFIX [INFO] Start recording..."
 
-  # Discord message with mention role
-  if [[ -n "${DISCORD_WEBHOOK}" ]]; then
-    _body="{
-  \"username\": \"\",
-  \"avatar_url\": \"\",
-  \"content\": \"${DISCORD_MENTION} Twitcasting Live Begins! \nhttps://twitcasting.tv/${1}/\",
-  \"embeds\": [],
-  \"components\": [
-    {
-      \"type\": 1,
-      \"components\": [
-        {
-          \"type\": 2,
-          \"style\": 5,
-          \"label\": \"Twitcasting GO\",
-          \"url\": \"https://twitcasting.tv/${1}/\"
-        }
-      ]
-    }
-  ]
-}"
-
-    curl -s -X POST -H 'Content-type: application/json' \
-        -d "$_body" "$DISCORD_WEBHOOK"
-  fi
-
   # Also record low resolution stream simultaneously as backup
   M3U8_URL="http://twitcasting.tv/$1/metastream.m3u8?video=1"
-  ffmpeg -i "$M3U8_URL" -codec copy -f mpegts "/download/m3u8_${FNAME}.ts" &
+  ffmpeg -hide_banner -nostdin -loglevel fatal -stats -i "$M3U8_URL" -codec copy -f mpegts "/download/m3u8_${FNAME}.ts" &
 
   # Start recording
   # docker run --rm --name "record_livedl" -v "${ARCHIVE}:/livedl" ghcr.io/jim60105/livedl:my-docker-build "https://twitcasting.tv/$1" -tcas -tcas-retry=on -tcas-retry-interval 30
@@ -59,34 +34,9 @@ while true; do
   LOG_PREFIX=$(date +"[%m/%d/%y %H:%M:%S] [twitcasting@$1] ")
   echo "$LOG_PREFIX [INFO] Stop recording ${FNAME}"
 
-  # Discord message with mention role
-  if [[ -n "${DISCORD_WEBHOOK}" ]]; then
-    _body="{
-  \"username\": \"\",
-  \"avatar_url\": \"\",
-  \"content\": \"Twitcasting Live is over! \nhttps://twitcasting.tv/${1}/\",
-  \"embeds\": [],
-  \"components\": [
-    {
-      \"type\": 1,
-      \"components\": [
-        {
-          \"type\": 2,
-          \"style\": 5,
-          \"label\": \"Check live history\",
-          \"url\": \"https://twitcasting.tv/${1}/show/\"
-        }
-      ]
-    }
-  ]
-}"
-    curl -s -X POST -H 'Content-type: application/json' \
-        -d "$_body" "$DISCORD_WEBHOOK"
-  fi
-
   # Convert to mp4
   echo "$LOG_PREFIX [INFO] Start convert ws_${FNAME}.ts to mp4..."
-  ffmpeg -i "/download/ws_${FNAME}.ts" -c copy -movflags +faststart "/download/${FNAME}.mp4" &
+  ffmpeg -hide_banner -nostdin -loglevel fatal -stats -i "/download/ws_${FNAME}.ts" -c copy -movflags +faststart "/download/${FNAME}.mp4" &
 
   # Exit if we just need to record current stream
   [[ "$2" == "once" ]] && break
